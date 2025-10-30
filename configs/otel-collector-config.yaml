@@ -1,50 +1,44 @@
-
-# Configuração do OpenTelemetry Collector
-# Recebe dados via OTLP (gRPC/HTTP) e os exporta para Jaeger, Loki e Prometheus.
+# Configuração Simplificada do OpenTelemetry Collector
+# Foco: Receber logs da aplicação e enviar para o Loki
 
 receivers:
+  # Recebe logs via OTLP HTTP (porta 4318)
   otlp:
     protocols:
-      grpc:
-        endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
 
 processors:
+  # Agrupa logs em batches antes de enviar
   batch:
-    # Agrupa spans, métricas e logs para otimizar a exportação.
-    timeout: 1s
-    send_batch_size: 1024
+    timeout: 5s
+    send_batch_size: 100
+
+  # Adiciona atributos úteis aos logs
+  resource:
+    attributes:
+      - key: service.environment
+        value: production
+        action: insert
 
 exporters:
-  # Exportador para Traces (Jaeger via OTLP)
-  otlp:
-    endpoint: jaeger:4317
-    tls:
-      insecure: true
-
-  # Exportador para Logs (Loki)
+  # Envia logs para o Loki
   loki:
     endpoint: http://loki:3100/loki/api/v1/push
-    tls:
-      insecure: true
+    labels:
+      resource:
+        service.name: "service_name"
+        service.environment: "service_environment"
+      attributes:
+        level: "level"
 
-  # Exportador para Métricas (Prometheus)
-  prometheus:
-    endpoint: 0.0.0.0:8888
-    namespace: "myapplication"
+  # Exibe logs no console (útil para debug)
+  logging:
+    loglevel: info
 
 service:
   pipelines:
-    traces:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [otlp]
-    metrics:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [prometheus]
     logs:
       receivers: [otlp]
-      processors: [batch]
-      exporters: [loki]
+      processors: [batch, resource]
+      exporters: [loki, logging]
