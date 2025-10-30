@@ -1,4 +1,4 @@
-# 🔍 Stack de Observabilidade Completa
+# Stack de Observabilidade Completa
 
 <div align="center">
 
@@ -11,104 +11,107 @@
 
 Implementa os três pilares da observabilidade: **Traces** • **Logs** • **Metrics**
 
-[Início Rápido](#-início-rápido) • [Documentação](#-documentação) • [Arquitetura](#-arquitetura) • [Troubleshooting](#-troubleshooting)
+[Início Rápido](#início-rápido) • [Documentação](#documentação-adicional) • [Arquitetura](#arquitetura) • [Troubleshooting](#troubleshooting)
 
 </div>
 
 ---
 
-## 📋 Sumário
+## Sumário
 
-- [Visão Geral](#-visão-geral)
-- [Componentes](#-componentes)
-- [Arquitetura](#-arquitetura)
-- [Pré-requisitos](#-pré-requisitos)
-- [Início Rápido](#-início-rápido)
-- [Endpoints de Acesso](#-endpoints-de-acesso)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Configuração](#-configuração)
-- [Integração com Aplicações](#-integração-com-aplicações)
-- [Comandos Úteis](#-comandos-úteis)
-- [Monitoramento](#-monitoramento)
-- [Backup e Restore](#-backup-e-restore)
-- [Produção](#-produção)
-- [Troubleshooting](#-troubleshooting)
-- [Documentação Adicional](#-documentação-adicional)
-- [Contribuindo](#-contribuindo)
-- [Licença](#-licença)
-
----
-
-## 🎯 Visão Geral
-
-Este projeto fornece uma **stack de observabilidade completa e profissional**, pronta para produção, utilizando Docker. A stack implementa as melhores práticas da indústria para monitoramento, logging e rastreamento distribuído de aplicações modernas.
-
-### 🎯 Por que usar esta stack?
-
-- ✅ **Completa**: Traces, Logs e Métricas em um único lugar
-- ✅ **Pronta para Produção**: Configurações otimizadas e testadas
-- ✅ **Fácil Integração**: Suporte para OpenTelemetry (OTLP)
-- ✅ **Correlação de Dados**: Link automático entre traces, logs e métricas
-- ✅ **Persistência**: Volumes Docker para dados críticos
-- ✅ **Escalável**: Arquitetura preparada para crescimento
-- ✅ **Zero Conflitos**: Portas configuradas na faixa 30000+ (sem conflitos)
+- [Visão Geral](#visão-geral)
+- [Componentes](#componentes)
+- [Arquitetura](#arquitetura)
+- [Pré-requisitos](#pré-requisitos)
+- [Início Rápido](#início-rápido)
+- [Endpoints de Acesso](#endpoints-de-acesso)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Configuração](#configuração)
+- [Integração com Aplicações](#integração-com-aplicações)
+- [Comandos Disponíveis](#comandos-disponíveis)
+- [Monitoramento e Queries](#monitoramento-e-queries)
+- [Backup e Restore](#backup-e-restore)
+- [Considerações para Produção](#considerações-para-produção)
+- [Troubleshooting](#troubleshooting)
+- [Documentação Adicional](#documentação-adicional)
+- [Contribuindo](#contribuindo)
+- [Licença](#licença)
 
 ---
 
-## 🧩 Componentes
+## Visão Geral
 
-<table>
-<tr>
-<td width="50%">
+Este projeto fornece uma stack de observabilidade completa e profissional, pronta para ambientes de produção, utilizando Docker. A stack implementa as melhores práticas da indústria para monitoramento, logging e rastreamento distribuído de aplicações modernas.
 
-### 📊 Visualização & Dashboards
+### Características Principais
+
+- **Completa**: Implementa os três pilares da observabilidade (Traces, Logs e Metrics)
+- **Pronta para Produção**: Configurações otimizadas e testadas em ambientes reais
+- **Fácil Integração**: Suporte nativo para OpenTelemetry Protocol (OTLP)
+- **Correlação de Dados**: Links automáticos entre traces, logs e métricas
+- **Persistência**: Volumes Docker configurados para dados críticos
+- **Escalável**: Arquitetura preparada para crescimento horizontal
+- **Sem Conflitos**: Portas configuradas na faixa 30000+ para evitar conflitos
+
+---
+
+## Componentes
+
+### Visualização e Dashboards
+
 - **Grafana 11.2.0**
-  - Dashboards interativos
-  - Data sources provisionados
-  - Correlação automática
-  - Alerting integrado
+  - Plataforma de visualização de dados
+  - Data sources provisionados automaticamente
+  - Correlação automática entre diferentes tipos de dados
+  - Sistema de alertas integrado
 
-### 📈 Métricas
+### Sistema de Métricas
+
 - **Prometheus 2.48.1**
   - Time-series database
-  - Retenção de 90 dias
-  - PromQL queries
+  - Retenção configurável (padrão: 90 dias)
+  - Linguagem de query PromQL
+
 - **Node Exporter 1.7.0**
-  - Métricas do host/SO
+  - Coleta de métricas do sistema operacional host
+  - CPU, memória, disco, rede
+
 - **cAdvisor 0.47.2**
-  - Métricas de containers
+  - Métricas de containers Docker
+  - Uso de recursos por container
 
-</td>
-<td width="50%">
+### Sistema de Traces (Rastreamento Distribuído)
 
-### 🔍 Traces (Rastreamento)
 - **Jaeger 1.50**
-  - Distributed tracing
-  - UI para análise
-  - OTLP enabled
+  - Plataforma de distributed tracing
+  - Interface de usuário para análise
+  - Suporte para OTLP habilitado
+
 - **OpenTelemetry Collector 0.88.0**
   - Hub central de telemetria
-  - OTLP gRPC/HTTP
-  - Processamento e exportação
+  - Suporte para OTLP gRPC e HTTP
+  - Processamento e exportação de dados
 
-### 📝 Logs
+### Sistema de Logs
+
 - **Loki 2.9.2**
-  - Agregação de logs
-  - Retenção de 30 dias
+  - Agregação de logs otimizada
+  - Retenção configurável (padrão: 30 dias)
+  - Queries similares ao Prometheus (LogQL)
+
 - **Promtail 2.9.2**
-  - Coleta logs Docker
+  - Agente de coleta de logs
+  - Integração com Docker
 
-### 🗄️ Banco de Dados
+### Monitoramento de Banco de Dados
+
 - **Percona PMM Server 2.40.1**
-  - MySQL, PostgreSQL, MongoDB
-
-</td>
-</tr>
-</table>
+  - Monitoramento especializado para bancos de dados
+  - Suporte para MySQL, PostgreSQL, MongoDB
 
 ---
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -146,210 +149,217 @@ Este projeto fornece uma **stack de observabilidade completa e profissional**, p
                 └──────────────────┘
 ```
 
-Veja a [documentação completa de arquitetura](ARCHITECTURE.md) para mais detalhes.
+Para documentação completa de arquitetura, consulte [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ---
 
-## 📦 Pré-requisitos
+## Pré-requisitos
 
-Antes de começar, certifique-se de ter:
+### Requisitos de Sistema
 
-- **Docker Engine** 20.10+ instalado ([Instalar Docker](https://docs.docker.com/get-docker/))
-- **Docker Compose** 2.0+ instalado ([Instalar Compose](https://docs.docker.com/compose/install/))
-- **4 GB de RAM** disponível (mínimo recomendado)
-- **10 GB de espaço em disco** disponível
-- **Portas disponíveis** na faixa 30000-40000
+- **Docker Engine** 20.10 ou superior
+- **Docker Compose** 2.0 ou superior
+- **RAM**: Mínimo 4 GB disponível (8 GB recomendado)
+- **Disco**: Mínimo 10 GB de espaço livre
+- **Portas**: Faixa 30000-40000 disponível
 
-### Verificar pré-requisitos
+### Verificação de Pré-requisitos
 
 ```bash
 # Verificar versão do Docker
 docker --version
-# Output esperado: Docker version 20.10.0 ou superior
+# Saída esperada: Docker version 20.10.0 ou superior
 
 # Verificar versão do Docker Compose
 docker compose version
-# Output esperado: Docker Compose version 2.0.0 ou superior
+# Saída esperada: Docker Compose version 2.0.0 ou superior
 
-# Verificar espaço em disco
+# Verificar espaço em disco disponível
 docker system df
 ```
 
 ---
 
-## 🚀 Início Rápido
+## Início Rápido
 
-### 1. Clone ou baixe este projeto
+### Passo 1: Obter o Projeto
 
 ```bash
-git clone <seu-repositorio>
+git clone <repositorio>
 cd Observabilidade
 ```
 
-### 2. Configure as variáveis de ambiente
+### Passo 2: Configurar Variáveis de Ambiente
 
 ```bash
-# Copie o arquivo de exemplo
+# Copiar arquivo de exemplo
 cp .env.example .env
 
-# Edite o arquivo .env e altere as senhas
-# IMPORTANTE: Altere GF_SECURITY_ADMIN_PASSWORD!
+# Editar arquivo .env
+# IMPORTANTE: Alterar senhas padrão, especialmente GF_SECURITY_ADMIN_PASSWORD
 ```
 
-### 3. Inicie a stack
+### Passo 3: Iniciar a Stack
 
 ```bash
-# Usando Docker Compose
+# Método 1: Usando Docker Compose
 docker compose up -d
 
-# OU usando Makefile (recomendado)
+# Método 2: Usando Makefile (recomendado)
 make up
 ```
 
-### 4. Aguarde os serviços iniciarem
+### Passo 4: Verificar Status dos Serviços
 
 ```bash
-# Verifique o status
+# Ver status de todos os containers
 make status
 
-# Ou
+# Ou usando Docker Compose diretamente
 docker compose ps
 ```
 
-### 5. Acesse as interfaces
+### Passo 5: Acessar as Interfaces
 
-Abra seu navegador nos seguintes endereços:
+Após a inicialização completa, acesse as seguintes URLs:
 
-- 🎨 **Grafana**: http://localhost:33000 (admin / sua_senha)
-- 🔍 **Jaeger UI**: http://localhost:36686
-- 📈 **Prometheus**: http://localhost:39090
-- 🗄️ **PMM Server**: http://localhost:33443 (admin / admin)
+- **Grafana**: http://localhost:33000
+  - Credenciais: admin / (conforme configurado no .env)
+- **Jaeger UI**: http://localhost:36686
+- **Prometheus**: http://localhost:39090
+- **PMM Server**: http://localhost:33443
+  - Credenciais: admin / admin (alterar em produção)
 
 ---
 
-## 🌐 Endpoints de Acesso
+## Endpoints de Acesso
 
-### Interfaces Web (UIs)
+### Interfaces Web
 
-| Serviço | URL | Credenciais | Descrição |
-|---------|-----|-------------|-----------|
-| **Grafana** | http://localhost:33000 | admin / (ver .env) | Dashboards e visualização |
-| **Jaeger UI** | http://localhost:36686 | - | Visualização de traces |
-| **Prometheus** | http://localhost:39090 | - | Métricas e queries |
-| **PMM Server** | http://localhost:33443 | admin / admin | Monitoramento DB |
-| **cAdvisor** | http://localhost:38080 | - | Métricas de containers |
-| **Node Exporter** | http://localhost:39100/metrics | - | Métricas do host |
+| Serviço | URL | Autenticação | Descrição |
+|---------|-----|--------------|-----------|
+| Grafana | http://localhost:33000 | Sim (ver .env) | Plataforma de visualização e dashboards |
+| Jaeger UI | http://localhost:36686 | Não | Interface de análise de traces |
+| Prometheus | http://localhost:39090 | Não | Interface de queries e métricas |
+| PMM Server | http://localhost:33443 | Sim (admin/admin) | Monitoramento de banco de dados |
+| cAdvisor | http://localhost:38080 | Não | Métricas de containers |
+| Node Exporter | http://localhost:39100/metrics | Não | Métricas do host (formato Prometheus) |
 
 ### APIs e Endpoints de Integração
 
-| Serviço | Porta | Protocolo | Uso |
-|---------|-------|-----------|-----|
-| **OTLP Collector** | 34317 | gRPC | Enviar traces/logs/metrics |
-| **OTLP Collector** | 34318 | HTTP | Enviar traces/logs/metrics |
-| **Jaeger Collector** | 34268 | HTTP | Coletar traces |
-| **Jaeger Agent** | 6831 | UDP | Coletar traces |
-| **Loki** | 33100 | HTTP | API de logs |
-| **OTEL Metrics** | 38888 | HTTP | Métricas do Collector |
+| Serviço | Porta | Protocolo | Finalidade |
+|---------|-------|-----------|------------|
+| OTLP Collector | 34317 | gRPC | Ingestão de traces, logs e metrics |
+| OTLP Collector | 34318 | HTTP | Ingestão de traces, logs e metrics |
+| Jaeger Collector | 34268 | HTTP | Coleta de traces (Thrift HTTP) |
+| Jaeger Agent | 6831 | UDP | Coleta de traces (Thrift Binary) |
+| Loki | 33100 | HTTP | API de logs |
+| OTEL Metrics | 38888 | HTTP | Métricas do OpenTelemetry Collector |
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 Observabilidade/
-├── 📄 docker-compose.yml          # Orquestração dos serviços
-├── 📄 .env                         # Variáveis de ambiente
-├── 📄 .env.example                 # Exemplo de configuração
-├── 📄 .gitignore                   # Arquivos ignorados pelo git
-├── 📄 Makefile                     # Comandos úteis
-├── 📄 README.md                    # Este arquivo
-├── 📄 ARCHITECTURE.md              # Documentação de arquitetura
-├── 📄 TROUBLESHOOTING.md           # Guia de resolução de problemas
-├── 📄 example.js                   # Exemplo de app instrumentada
+├── docker-compose.yml          # Orquestração dos serviços
+├── .env                         # Variáveis de ambiente (não versionar)
+├── .env.example                 # Template de configuração
+├── .gitignore                   # Arquivos ignorados pelo Git
+├── Makefile                     # Comandos de automação
+├── README.md                    # Este arquivo
+├── ARCHITECTURE.md              # Documentação de arquitetura
+├── TROUBLESHOOTING.md           # Guia de resolução de problemas
+├── example.js                   # Exemplo de aplicação instrumentada
 │
-├── 📁 configs/                     # Configurações dos serviços
-│   ├── otel-collector-config.yaml # OpenTelemetry Collector
-│   ├── prometheus.yml              # Prometheus
-│   ├── loki-config.yml             # Loki
-│   └── promtail-config.yml         # Promtail
+├── configs/                     # Arquivos de configuração
+│   ├── otel-collector-config.yaml
+│   ├── prometheus.yml
+│   ├── loki-config.yml
+│   └── promtail-config.yml
 │
-└── 📁 grafana/                     # Configurações do Grafana
+└── grafana/                     # Configurações do Grafana
     ├── provisioning/
     │   ├── datasources/
-    │   │   └── datasources.yml     # Prometheus, Loki, Jaeger
+    │   │   └── datasources.yml
     │   └── dashboards/
-    │       └── dashboards.yml      # Configuração de dashboards
-    └── dashboards/                 # Seus dashboards customizados
+    │       └── dashboards.yml
+    └── dashboards/
         └── README.txt
 ```
 
 ---
 
-## ⚙️ Configuração
+## Configuração
 
-### Arquivo `.env`
+### Arquivo .env
 
-O arquivo `.env` contém todas as configurações importantes da stack:
+O arquivo `.env` contém as variáveis de ambiente principais:
 
 ```ini
-# VERSÕES (fixadas para estabilidade)
+# Versões dos componentes (fixadas para garantir estabilidade)
 GRAFANA_VERSION=11.2.0
 PROMETHEUS_VERSION=v2.48.1
 JAEGER_VERSION=1.50
-# ... outras versões
+LOKI_VERSION=2.9.2
+# ... demais versões
 
-# CREDENCIAIS
+# Credenciais (ALTERAR EM PRODUÇÃO)
 GF_SECURITY_ADMIN_USER=admin
-GF_SECURITY_ADMIN_PASSWORD=sua_senha_segura  # ⚠️ ALTERE ISSO!
+GF_SECURITY_ADMIN_PASSWORD=senha_forte_aqui
 
-# RETENÇÃO DE DADOS
-PROMETHEUS_RETENTION_TIME=90d    # Métricas: 90 dias
-LOKI_RETENTION_DAYS=30d          # Logs: 30 dias
-JAEGER_RETENTION_HOURS=24h       # Traces: 24 horas
+# Políticas de Retenção de Dados
+PROMETHEUS_RETENTION_TIME=90d    # Métricas
+LOKI_RETENTION_DAYS=30d          # Logs
+JAEGER_RETENTION_HOURS=24h       # Traces (em memória)
 ```
 
 ### Arquivos de Configuração
 
 | Arquivo | Descrição |
 |---------|-----------|
-| `configs/otel-collector-config.yaml` | Receivers, processors e exporters do OTEL |
-| `configs/prometheus.yml` | Targets de scrape e configurações |
-| `configs/loki-config.yml` | Storage e retenção de logs |
-| `configs/promtail-config.yml` | Coleta de logs dos containers |
-| `grafana/provisioning/datasources/datasources.yml` | Prometheus, Loki e Jaeger auto-provisionados |
+| `configs/otel-collector-config.yaml` | Configuração do OpenTelemetry Collector (receivers, processors, exporters) |
+| `configs/prometheus.yml` | Configuração do Prometheus (scrape targets, intervals) |
+| `configs/loki-config.yml` | Configuração do Loki (storage, retenção) |
+| `configs/promtail-config.yml` | Configuração do Promtail (fontes de logs) |
+| `grafana/provisioning/datasources/datasources.yml` | Provisionamento automático de data sources |
 
 ### Volumes Persistentes
 
-Os dados são armazenados em volumes Docker nomeados:
+A stack utiliza volumes Docker nomeados para persistência:
 
-- `grafana_data`: Dashboards e configurações
-- `prometheus_data`: Métricas time-series (~5-50GB)
-- `loki_data`: Logs agregados (~2-20GB)
-- `pmm_data`: Dados de monitoramento de DB
+| Volume | Serviço | Conteúdo | Tamanho Estimado |
+|--------|---------|----------|------------------|
+| `grafana_data` | Grafana | Dashboards, configurações, plugins | ~500 MB |
+| `prometheus_data` | Prometheus | Time-series database | 5-50 GB |
+| `loki_data` | Loki | Logs agregados e índices | 2-20 GB |
+| `pmm_data` | PMM Server | Métricas de banco de dados | 1-10 GB |
 
 ---
 
-## 🔌 Integração com Aplicações
+## Integração com Aplicações
 
-### Como Conectar Sua Aplicação
+### Configuração do Endpoint OTLP
 
-O OpenTelemetry Collector é o ponto de entrada para toda telemetria. Configure sua aplicação para enviar dados via OTLP:
+Configure sua aplicação para enviar dados de telemetria para o OpenTelemetry Collector:
 
+**Aplicação externa ao Docker:**
 ```bash
-# Se sua app está FORA do Docker
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:34317  # gRPC
 # ou
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:34318  # HTTP
-
-# Se sua app está DENTRO da rede Docker 'observability'
-OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317  # gRPC
 ```
 
-### Exemplo Node.js
+**Aplicação dentro da rede Docker 'observability':**
+```bash
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317  # gRPC
+# ou
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318  # HTTP
+```
 
-Veja o arquivo `example.js` para um exemplo completo de instrumentação.
+### Exemplo de Instrumentação (Node.js)
 
-**Instalação das dependências**:
+O arquivo `example.js` contém um exemplo completo de instrumentação. Instalação básica:
 
 ```bash
 npm install @opentelemetry/sdk-node \
@@ -358,7 +368,7 @@ npm install @opentelemetry/sdk-node \
             @opentelemetry/auto-instrumentations-node
 ```
 
-**Código básico**:
+Código mínimo:
 
 ```javascript
 const { NodeSDK } = require('@opentelemetry/sdk-node');
@@ -377,56 +387,60 @@ sdk.start();
 
 O OpenTelemetry possui SDKs oficiais para:
 
-- **JavaScript/Node.js** - [Docs](https://opentelemetry.io/docs/instrumentation/js/)
-- **Python** - [Docs](https://opentelemetry.io/docs/instrumentation/python/)
-- **Go** - [Docs](https://opentelemetry.io/docs/instrumentation/go/)
-- **Java** - [Docs](https://opentelemetry.io/docs/instrumentation/java/)
-- **.NET** - [Docs](https://opentelemetry.io/docs/instrumentation/net/)
-- **PHP, Ruby, Rust** - e muitas outras!
+- JavaScript/Node.js - [Documentação](https://opentelemetry.io/docs/instrumentation/js/)
+- Python - [Documentação](https://opentelemetry.io/docs/instrumentation/python/)
+- Go - [Documentação](https://opentelemetry.io/docs/instrumentation/go/)
+- Java - [Documentação](https://opentelemetry.io/docs/instrumentation/java/)
+- .NET - [Documentação](https://opentelemetry.io/docs/instrumentation/net/)
+- PHP, Ruby, Rust e outras
 
 ---
 
-## 🛠️ Comandos Úteis
+## Comandos Disponíveis
 
-Este projeto inclui um **Makefile** com comandos úteis:
+### Usando Makefile
+
+O projeto inclui um Makefile com comandos de automação:
 
 ```bash
-make help          # Mostra todos os comandos disponíveis
+make help          # Exibe todos os comandos disponíveis
 make up            # Inicia todos os serviços
 make down          # Para todos os serviços
 make restart       # Reinicia todos os serviços
-make logs          # Mostra logs de todos os serviços
-make logs-grafana  # Mostra logs de um serviço específico
-make status        # Status de todos os serviços
-make endpoints     # Lista todos os endpoints
+make logs          # Exibe logs de todos os serviços
+make logs-<service> # Exibe logs de um serviço específico (ex: make logs-grafana)
+make status        # Mostra status de todos os serviços
+make endpoints     # Lista todos os endpoints disponíveis
 make health        # Verifica saúde dos serviços
-make test          # Testa conectividade
-make backup        # Faz backup dos volumes
-make clean         # Remove containers e imagens não usadas
+make test          # Testa conectividade com os serviços
+make backup        # Cria backup dos volumes
+make clean         # Remove containers e imagens não utilizadas
+make validate      # Valida arquivos de configuração
+make update        # Atualiza para versões mais recentes
 ```
 
-### Comandos Docker Compose Diretos
+### Comandos Docker Compose
 
 ```bash
-# Iniciar
+# Iniciar serviços em background
 docker compose up -d
 
-# Parar (mantém volumes)
+# Parar serviços (mantém volumes)
 docker compose down
 
-# Parar e REMOVER volumes (⚠️ perde dados!)
+# Parar serviços e remover volumes (CUIDADO: perde dados)
 docker compose down -v
 
-# Ver logs
+# Visualizar logs em tempo real
 docker compose logs -f
 
-# Ver logs de um serviço
+# Visualizar logs de um serviço específico
 docker compose logs -f grafana
 
-# Ver status
+# Verificar status
 docker compose ps
 
-# Reiniciar um serviço
+# Reiniciar um serviço específico
 docker compose restart grafana
 
 # Atualizar imagens
@@ -436,129 +450,170 @@ docker compose up -d
 
 ---
 
-## 📊 Monitoramento
+## Monitoramento e Queries
 
-### No Grafana
+### Acessando o Grafana
 
-1. **Acesse**: http://localhost:33000
-2. **Login**: admin / (sua senha do .env)
-3. **Explore**:
-   - Clique em "Explore" na barra lateral
-   - Selecione um data source (Prometheus, Loki ou Jaeger)
+1. Acesse http://localhost:33000
+2. Faça login com as credenciais do arquivo `.env`
+3. Navegue até "Explore" na barra lateral
+4. Selecione um data source (Prometheus, Loki ou Jaeger)
 
 ### Exemplos de Queries
 
-**Prometheus (Métricas)**:
+#### Prometheus (PromQL)
+
 ```promql
-# Ver status de todos os targets
+# Status de todos os targets monitorados
 up
 
-# CPU usage do host
-rate(node_cpu_seconds_total[5m])
+# Uso de CPU do host (rate de 5 minutos)
+rate(node_cpu_seconds_total{mode="idle"}[5m])
 
-# Memória de containers
+# Uso de memória por container
 container_memory_usage_bytes
 
-# Requests HTTP personalizadas (da sua app)
+# Taxa de requisições HTTP (métricas customizadas da aplicação)
 rate(http_requests_total[5m])
+
+# Percentil 95 de latência
+histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
 ```
 
-**Loki (Logs)**:
+#### Loki (LogQL)
+
 ```logql
 # Todos os logs de containers
 {job="containerlogs"}
 
-# Logs com erro
-{job="containerlogs"} |~ "error"
+# Logs contendo a palavra "error" (case-insensitive)
+{job="containerlogs"} |~ "(?i)error"
 
 # Logs de um container específico
 {container_name="grafana"}
+
+# Logs com parsing JSON
+{job="containerlogs"} | json | level="error"
+
+# Rate de logs de erro nos últimos 5 minutos
+rate({job="containerlogs"} |~ "error" [5m])
 ```
 
-**Jaeger (Traces)**:
-- Selecione o serviço (ex: `my-nodejs-app`)
-- Escolha a operação (ex: `doWork`)
-- Clique em "Find Traces"
+#### Jaeger (Traces)
+
+1. Selecione o serviço na lista (ex: `my-nodejs-app`)
+2. Opcionalmente, filtre por operação específica (ex: `doWork`)
+3. Adicione tags para filtros avançados (ex: `http.status_code=500`)
+4. Clique em "Find Traces"
+5. Selecione um trace para visualizar detalhes
 
 ### Correlação de Dados
 
-A stack está configurada para correlação automática:
+A stack está configurada para correlação automática entre diferentes tipos de dados:
 
-- 🔍 **Trace → Logs**: Click no TraceID em um log do Loki para ver o trace no Jaeger
-- 📊 **Metrics → Traces**: Query no Prometheus com link para traces relacionados
-- 📝 **Logs → Traces**: Logs contendo TraceID linkam automaticamente para Jaeger
+- **Trace para Logs**: Clique em um TraceID em logs do Loki para navegar até o trace correspondente no Jaeger
+- **Metrics para Traces**: Queries no Prometheus podem incluir links para traces relacionados
+- **Logs para Traces**: Logs que contêm TraceID automaticamente linkam para o Jaeger
 
 ---
 
-## 💾 Backup e Restore
+## Backup e Restore
 
-### Fazer Backup
+### Criação de Backup
+
+#### Usando Makefile
 
 ```bash
-# Usando Makefile
 make backup
-
-# Ou manualmente
-mkdir -p backups
-docker run --rm -v observabilidade_grafana_data:/data \
-  -v $(pwd)/backups:/backup alpine \
-  tar czf /backup/grafana_backup_$(date +%Y%m%d).tar.gz -C /data .
 ```
 
-### Restaurar Backup
+Isso criará backups de todos os volumes na pasta `./backups/` com timestamp.
+
+#### Manualmente
 
 ```bash
-# 1. Pare os serviços
-docker compose down
+mkdir -p backups
 
-# 2. Restaure o volume
+# Backup do Grafana
 docker run --rm -v observabilidade_grafana_data:/data \
   -v $(pwd)/backups:/backup alpine \
-  tar xzf /backup/grafana_backup_XXXXXXXX.tar.gz -C /data
+  tar czf /backup/grafana_$(date +%Y%m%d_%H%M%S).tar.gz -C /data .
 
-# 3. Reinicie
+# Backup do Prometheus
+docker run --rm -v observabilidade_prometheus_data:/data \
+  -v $(pwd)/backups:/backup alpine \
+  tar czf /backup/prometheus_$(date +%Y%m%d_%H%M%S).tar.gz -C /data .
+
+# Backup do Loki
+docker run --rm -v observabilidade_loki_data:/data \
+  -v $(pwd)/backups:/backup alpine \
+  tar czf /backup/loki_$(date +%Y%m%d_%H%M%S).tar.gz -C /data .
+```
+
+### Restauração de Backup
+
+```bash
+# 1. Parar os serviços
+docker compose down
+
+# 2. Restaurar o volume desejado
+docker run --rm -v observabilidade_grafana_data:/data \
+  -v $(pwd)/backups:/backup alpine \
+  tar xzf /backup/grafana_TIMESTAMP.tar.gz -C /data
+
+# 3. Reiniciar os serviços
 docker compose up -d
 ```
 
 ---
 
-## 🚀 Produção
+## Considerações para Produção
 
-### ⚠️ Checklist de Segurança
+### Checklist de Segurança
 
-Antes de usar em produção, **OBRIGATORIAMENTE**:
+Antes de implantar em produção, é **obrigatório**:
 
-- [ ] Altere **todas as senhas** padrão no `.env`
-- [ ] Configure TLS/SSL para todas as UIs
-- [ ] Configure autenticação para Prometheus, Jaeger, Loki
-- [ ] Use reverse proxy (Nginx, Traefik) na frente dos serviços
-- [ ] Restrinja acesso via firewall (IPs whitelistados)
-- [ ] Configure Jaeger com storage persistente (Cassandra/ES)
-- [ ] Implemente rotação de logs
-- [ ] Configure backups automatizados
-- [ ] Monitore uso de recursos
-- [ ] Configure alertas no Grafana/Prometheus
+- [ ] Alterar todas as senhas padrão no arquivo `.env`
+- [ ] Configurar TLS/SSL para todas as interfaces de usuário
+- [ ] Implementar autenticação para Prometheus, Jaeger e Loki
+- [ ] Configurar reverse proxy (Nginx, Traefik, HAProxy) na frente dos serviços
+- [ ] Restringir acesso via firewall (whitelist de IPs)
+- [ ] Configurar Jaeger com storage persistente (Cassandra, Elasticsearch ou PostgreSQL)
+- [ ] Implementar rotação automática de logs
+- [ ] Configurar backups automatizados e testá-los regularmente
+- [ ] Monitorar uso de recursos dos containers
+- [ ] Configurar alertas no Grafana e Prometheus
+- [ ] Revisar e ajustar políticas de retenção de dados
+- [ ] Implementar auditoria de acessos
 
-### Escalabilidade
+### Recomendações de Escalabilidade
 
-**Pequeno Porte (1-10 serviços)**:
-- Configuração atual é suficiente
-- Considere Jaeger com storage persistente
+#### Ambiente de Pequeno Porte (1-10 serviços)
 
-**Médio Porte (10-100 serviços)**:
+- Configuração atual é adequada
+- Considerar migração do Jaeger para storage persistente
+- Monitorar uso de disco dos volumes
+
+#### Ambiente de Médio Porte (10-100 serviços)
+
 - Jaeger com Cassandra ou Elasticsearch
-- Loki distribuído
-- Prometheus com remote storage
+- Loki em modo distribuído
+- Prometheus com remote storage (Thanos ou Cortex)
+- Múltiplas instâncias do OpenTelemetry Collector
+- Load balancer para o Grafana
 
-**Grande Porte (100+ serviços)**:
-- Jaeger distribuído (Spark, Kafka)
-- Loki clustering
+#### Ambiente de Grande Porte (100+ serviços)
+
+- Jaeger totalmente distribuído (Spark, Kafka)
+- Loki clustering completo
 - Prometheus Federation ou Thanos/Cortex
-- OTEL Collector escalado horizontalmente
+- OpenTelemetry Collector escalado horizontalmente
+- Grafana em alta disponibilidade
+- Estratégia de sharding para dados
 
 ### Limitação de Recursos
 
-Adicione limites no `docker-compose.yml`:
+Adicione limites de recursos no `docker-compose.yml` para evitar consumo excessivo:
 
 ```yaml
 services:
@@ -569,48 +624,83 @@ services:
           cpus: '2'
           memory: 4G
         reservations:
+          cpus: '1'
           memory: 2G
 ```
 
+### Otimização de Performance
+
+- Ajuste os intervalos de scrape do Prometheus conforme necessário
+- Configure retenção de dados apropriada para seu caso de uso
+- Monitore e ajuste batch sizes no OpenTelemetry Collector
+- Implemente sampling de traces em ambientes de alta carga
+- Considere compressão de logs
+
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Problemas Comuns
 
-**Porta já está em uso**:
-```bash
-# Verifique qual processo está usando a porta
-netstat -ano | findstr :33000  # Windows
-lsof -i :33000                  # Linux/Mac
+#### Porta já está em uso
 
-# Altere a porta no docker-compose.yml
+```bash
+# Windows
+netstat -ano | findstr :33000
+
+# Linux/Mac
+lsof -i :33000
+
+# Solução: Altere a porta no docker-compose.yml ou finalize o processo
 ```
 
-**Container reiniciando**:
+#### Container reiniciando continuamente
+
 ```bash
-# Veja os logs
+# Visualize os logs do container
 docker logs <container_name>
 
-# Verifique recursos
+# Verifique uso de recursos
 docker stats
+
+# Verifique configurações
+docker inspect <container_name>
 ```
 
-**Dados não aparecem no Grafana**:
+#### Data sources não conectam no Grafana
+
 ```bash
-# Verifique se os serviços estão rodando
+# Verifique se todos os serviços estão rodando
 docker compose ps
 
-# Teste conectividade
+# Teste conectividade entre containers
 docker exec grafana ping prometheus
 docker exec grafana wget -O- http://prometheus:9090/-/healthy
+
+# Verifique logs do Grafana
+docker logs grafana
 ```
 
-Para mais soluções, consulte o [Guia de Troubleshooting](TROUBLESHOOTING.md).
+#### Dados não aparecem
+
+```bash
+# Verifique targets no Prometheus
+# Acesse: http://localhost:39090/targets
+
+# Verifique logs do OTEL Collector
+docker logs otel-collector
+
+# Teste endpoint do OTEL Collector
+curl -v http://localhost:34318/v1/traces
+```
+
+Para soluções detalhadas, consulte [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
 ---
 
-## 📚 Documentação Adicional
+## Documentação Adicional
+
+### Documentação do Projeto
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura detalhada e fluxo de dados
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Guia completo de resolução de problemas
@@ -618,40 +708,54 @@ Para mais soluções, consulte o [Guia de Troubleshooting](TROUBLESHOOTING.md).
 
 ### Documentação Externa
 
-- [OpenTelemetry](https://opentelemetry.io/docs/)
-- [Grafana](https://grafana.com/docs/)
-- [Prometheus](https://prometheus.io/docs/)
-- [Jaeger](https://www.jaegertracing.io/docs/)
-- [Loki](https://grafana.com/docs/loki/)
+- [OpenTelemetry Documentation](https://opentelemetry.io/docs/)
+- [Grafana Documentation](https://grafana.com/docs/)
+- [Prometheus Documentation](https://prometheus.io/docs/)
+- [Jaeger Documentation](https://www.jaegertracing.io/docs/)
+- [Loki Documentation](https://grafana.com/docs/loki/)
+
+### Recursos da Comunidade
+
+- [CNCF Observability](https://www.cncf.io/projects/)
+- [OpenTelemetry Community](https://opentelemetry.io/community/)
+- [Grafana Community](https://community.grafana.com/)
 
 ---
 
-## 🤝 Contribuindo
+## Contribuindo
 
-Contribuições são bem-vindas! Sinta-se à vontade para:
+Contribuições são bem-vindas. Para contribuir:
 
-1. Fazer um fork do projeto
-2. Criar uma branch para sua feature (`git checkout -b feature/amazing-feature`)
-3. Commitar suas mudanças (`git commit -m 'Add amazing feature'`)
-4. Push para a branch (`git push origin feature/amazing-feature`)
-5. Abrir um Pull Request
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nome-da-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nome-da-feature`)
+5. Abra um Pull Request
+
+### Diretrizes de Contribuição
+
+- Mantenha o código limpo e bem documentado
+- Siga as convenções de código existentes
+- Adicione testes quando apropriado
+- Atualize a documentação conforme necessário
+- Certifique-se de que todas as mudanças são compatíveis com a arquitetura existente
 
 ---
 
-## 📝 Licença
+## Licença
 
-Este projeto é fornecido "como está", sem garantias. Use por sua conta e risco.
+Este projeto é fornecido "como está", sem garantias de qualquer tipo, expressas ou implícitas. Use por sua conta e risco.
 
 ---
 
-## 🙏 Agradecimentos
+## Agradecimentos
 
-Stack criada com as seguintes ferramentas open-source:
+Esta stack foi criada utilizando as seguintes ferramentas open-source:
 
 - [Grafana Labs](https://grafana.com/) - Grafana, Loki, Promtail
-- [Prometheus](https://prometheus.io/) - CNCF Project
-- [Jaeger](https://www.jaegertracing.io/) - CNCF Project
-- [OpenTelemetry](https://opentelemetry.io/) - CNCF Project
+- [Prometheus](https://prometheus.io/) - Cloud Native Computing Foundation Project
+- [Jaeger](https://www.jaegertracing.io/) - Cloud Native Computing Foundation Project
+- [OpenTelemetry](https://opentelemetry.io/) - Cloud Native Computing Foundation Project
 - [Percona](https://www.percona.com/) - PMM Server
 - [cAdvisor](https://github.com/google/cadvisor) - Google
 
@@ -659,8 +763,8 @@ Stack criada com as seguintes ferramentas open-source:
 
 <div align="center">
 
-**⭐ Se este projeto foi útil, considere dar uma estrela!**
+**Stack de Observabilidade Completa**
 
-Made with ❤️ para a comunidade de observabilidade
+Desenvolvido para a comunidade de observabilidade e DevOps
 
 </div>
