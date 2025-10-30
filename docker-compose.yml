@@ -1,0 +1,179 @@
+
+version: '3.8'
+
+# Este arquivo docker-compose.yml configura uma stack de observabilidade completa
+# com Grafana, Loki, Promtail, Prometheus, Jaeger, OpenTelemetry Collector e PMM.
+#
+# Para subir a stack, execute: docker-compose up -d
+#
+# Endpoints de acesso:
+# - Grafana: http://localhost:33000
+# - Jaeger UI: http://localhost:36686
+# - Prometheus UI: http://localhost:39090
+# - PMM Server: http://localhost:33443
+
+networks:
+  observability:
+    driver: bridge
+    name: observability
+
+volumes:
+  grafana_data:
+  prometheus_data:
+  loki_data:
+  pmm_data:
+
+services:
+  # --- VISUALIZAÇÃO E DASHBOARDS ---
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION}
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "33000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      # - GF_INSTALL_PLUGINS=grafana-jaeger-datasource
+    networks:
+      - observability
+    depends_on:
+      - prometheus
+      - loki
+      - jaeger
+
+  # --- COLETA E ARMAZENAMENTO DE LOGS ---
+  loki:
+    image: grafana/loki:${LOKI_VERSION}
+    container_name: loki
+    restart: unless-stopped
+    ports:
+      - "33100:3100"
+    volumes:
+      - loki_data:/loki
+      - ./configs/loki-config.yml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml -config.expand-env=true
+    networks:
+      - observability
+
+  promtail:
+    image: grafana/promtail:${PROMTAIL_VERSION}
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Adicionado para acesso aos metadados do Docker
+      - /var/log:/var/log
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./configs/promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - observability
+    depends_on:
+      - loki
+
+  # --- COLETA E ARMAZENAMENTO DE MÉTRICAS ---
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_VERSION}
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "39090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION_TIME}'
+    networks:
+      - observability
+    depends_on:
+      - cadvisor
+      - node-exporter
+
+  node-exporter:
+    image: prom/node-exporter:${NODE_EXPORTER_VERSION}
+    container_name: node-exporter
+    restart: unless-stopped
+    ports:
+      - "39100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - observability
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:${CADVISOR_VERSION}
+    container_name: cadvisor
+    restart: unless-stopped
+    ports:
+      - "38080:8080" # Porta 8080 interna, 38080 externa para evitar conflitos
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - observability
+
+  # --- COLETA E VISUALIZAÇÃO DE TRACES ---
+  jaeger:
+    image: jaegertracing/all-in-one:${JAEGER_VERSION}
+    container_name: jaeger
+    restart: unless-stopped
+    ports:
+      - "36686:16686" # Jaeger UI
+      - "6831:6831/udp" # Agent - Thrift Binary
+      - "34268:14268" # Collector - Thrift HTTP
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=memory
+      - MEMORY_MAX_TRACES=100000
+    command: ["--memory.max-traces=100000", "--query.base-path=/jaeger/ui"]
+    networks:
+      - observability
+
+  # --- HUB CENTRAL DE TELEMETRIA ---
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:${OTEL_COLLECTOR_VERSION}
+    container_name: otel-collector
+    restart: unless-stopped
+    ports:
+      - "34317:4317" # OTLP gRPC
+      - "34318:4318" # OTLP HTTP
+      - "38888:8888" # Prometheus Metrics
+    volumes:
+      - ./configs/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    networks:
+      - observability
+    depends_on:
+      - jaeger
+      - loki
+      - prometheus
+
+  # --- MONITORAMENTO DE BANCO DE DADOS ---
+  pmm-server:
+    image: percona/pmm-server:${PMM_SERVER_VERSION}
+    container_name: pmm-server
+    restart: unless-stopped
+    ports:
+      - "33443:80"
+      - "34443:443"
+    volumes:
+      - pmm_data:/srv
+    environment:
+      - PMM_ADMIN_PASSWORD=admin # Defina uma senha segura em produção
+    networks:
+      - observability
+

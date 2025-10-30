@@ -1,0 +1,31 @@
+
+# Configuração global do Prometheus
+global:
+  scrape_interval: 15s # Intervalo padrão para coletar métricas
+  evaluation_interval: 15s
+
+# Regras de alerta (opcional, pode ser configurado aqui)
+# rule_files:
+#   - "alert.rules.yml"
+
+# Configuração dos alvos de scraping
+scrape_configs:
+  # Scrape do próprio Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Scrape do Node Exporter para métricas do host
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Scrape do cAdvisor para métricas de containers Docker
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
+  # Scrape do OpenTelemetry Collector para métricas de aplicações
+  - job_name: 'otel-collector'
+    static_configs:
+      - targets: ['otel-collector:8888']

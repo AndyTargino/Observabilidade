@@ -1,0 +1,12 @@
+
+# Configuração de provisionamento de Dashboards do Grafana
+apiVersion: 1
+
+providers:
+  - name: 'default'
+    orgId: 1
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

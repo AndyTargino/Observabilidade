@@ -1,0 +1,42 @@
+# Configuração de provisionamento dos Data Sources do Grafana
+apiVersion: 1
+
+datasources:
+  # --- Data Source do Prometheus ---
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    jsonData:
+      httpMethod: POST
+      exemplarTraceIdDestinations: 
+        - name: "trace_id"
+          datasourceUid: "jaeger"
+
+  # --- Data Source do Loki ---
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    jsonData:
+      derivedFields:
+        - datasourceUid: jaeger
+          matcherRegex: 'traceId=(\\w+)'
+          name: TraceID
+          url: '${__value.raw}'
+
+  # --- Data Source do Jaeger ---
+  - name: Jaeger
+    type: jaeger
+    access: proxy
+    url: http://jaeger:16686
+    jsonData:
+      tracesToLogs:
+        datasourceUid: 'loki'
+        tags: ['instanceId', 'service.name']
+        mappedTags: [{ key: 'service.name', value: 'app' }]
+        spanStartTimeShift: '1h'
+        spanEndTimeShift: '1h'
+        filterByTraceID: true
+        filterBySpanID: false

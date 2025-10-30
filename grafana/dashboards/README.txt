@@ -1,0 +1,1 @@
+Este diretório é para armazenar dashboards personalizados do Grafana. Você pode adicionar seus arquivos .json de dashboard aqui.
